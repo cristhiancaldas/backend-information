@@ -12,7 +12,10 @@ pipeline{
         }
         stage ('checkout scm') {
             steps {
-                git 'https://github.com/cristhiancaldas/backend-information.git'
+            checkoutCall(
+                                branch: "main",
+                                url: "https://github.com/cristhiancaldas/backend-information.git"
+                            )
             }
         }
         stage ('maven compile') {
@@ -26,4 +29,12 @@ pipeline{
             }
         }
    }
+}
+
+def checkoutCall(Map stageParams) {
+    checkout([
+        $class: 'GitSCM',
+        branches: [[name:  stageParams.branch ]],
+        userRemoteConfigs: [[ url: stageParams.url ]]
+    ])
 }
