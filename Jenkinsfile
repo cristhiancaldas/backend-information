@@ -4,6 +4,10 @@ pipeline{
         jdk 'jdk17'
         maven 'maven3'
     }
+    environment {
+            SCANNER_HOME=tool 'sonar-scanner'
+    }
+
     stages{
         stage ('clean Workspace'){
             steps{
@@ -28,6 +32,24 @@ pipeline{
                 sh 'mvn test'
             }
         }
+
+        stage("Sonarqube Analysis "){
+                    steps{
+                        withSonarQubeEnv('sonar-server') {
+                            sh ''' $SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName=TerraformJenkins \
+                            -Dsonar.java.binaries=. \
+                            -Dsonar.projectKey=Terraform '''
+                        }
+                    }
+                }
+
+        stage("quality gate"){
+                    steps {
+                        script {
+                          waitForQualityGate abortPipeline: false, credentialsId: 'Sonar-token'
+                        }
+                   }
+                }
    }
 }
 
