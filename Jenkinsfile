@@ -66,9 +66,9 @@ pipeline{
                     steps{
                         script{
                             withDockerRegistry(credentialsId: 'docker', toolName: 'docker') {
-                                sh "docker build -t terraformProject ."
-                                sh "docker tag terraformProject crist/terraformProject:latest"
-                                sh "docker push crist/terraformProject:latest"
+                                sh "docker build -t terraformproject ."
+                                sh "docker tag terraformProject crist/terraformproject:latest"
+                                sh "docker push crist/terraformproject:latest"
                            }
                         }
                     }
@@ -76,7 +76,7 @@ pipeline{
 
         stage("TRIVY"){
                     steps{
-                        sh "trivy image crist/terraformProject:latest > trivy.txt"
+                        sh "trivy image crist/terraformproject:latest > trivy.txt"
                     }
         }
 
