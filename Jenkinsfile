@@ -62,6 +62,31 @@ pipeline{
                     }
         }
 
+        stage ('Build and push to docker hub'){
+                    steps{
+                        script{
+                            withDockerRegistry(credentialsId: 'docker', toolName: 'docker') {
+                                sh "docker build -t terraformProject ."
+                                sh "docker tag terraformProject crist/terraformProject:latest"
+                                sh "docker push crist/terraformProject:latest"
+                           }
+                        }
+                    }
+        }
+
+        stage("TRIVY"){
+                    steps{
+                        sh "trivy image crist/terraformProject:latest > trivy.txt"
+                    }
+        }
+
+        stage ('Deploy to container'){
+                    steps{
+                        sh 'docker run -d --name pet1 -p 8090:8080 crist/terraformProject:latest'
+                    }
+        }
+
+
    }
 }
 
