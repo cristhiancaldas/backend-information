@@ -8,6 +8,8 @@ pipeline{
 
     environment {
             SCANNER_HOME=tool 'sonar-scanner'
+            docker_repo = "crist"
+            imageName = 'jenkins-terraform'
     }
 
     stages{
@@ -66,9 +68,9 @@ pipeline{
                     steps{
                         script{
                             withDockerRegistry(credentialsId: 'docker', toolName: 'docker') {
-                                sh "docker build -t terraformproject ."
-                                sh "docker tag terraformProject crist/terraformproject:latest"
-                                sh "docker push crist/terraformproject:latest"
+                                sh "docker build -t ${ImageName} ."
+                                sh "docker tag ${ImageName} ${docker_repo}/${ImageName}:latest"
+                                sh "docker push ${docker_repo}/${ImageName}:latest"
                            }
                         }
                     }
@@ -76,13 +78,13 @@ pipeline{
 
         stage("TRIVY"){
                     steps{
-                        sh "trivy image crist/terraformproject:latest > trivy.txt"
+                        sh "trivy image ${docker_repo}/${ImageName}:latest > trivy.txt"
                     }
         }
 
         stage ('Deploy to container'){
                     steps{
-                        sh 'docker run -d --name pet1 -p 8090:8080 crist/terraformProject:latest'
+                        sh 'docker run -d --name pet1 -p 8090:8080 ${docker_repo}/${ImageName}:latest'
                     }
         }
 
