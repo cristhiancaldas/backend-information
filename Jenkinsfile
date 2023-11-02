@@ -68,9 +68,9 @@ pipeline{
                     steps{
                         script{
                             withDockerRegistry(credentialsId: 'docker', toolName: 'docker') {
-                                sh "docker build -t ${ImageName} ."
-                                sh "docker tag ${ImageName} ${docker_repo}/${ImageName}:latest"
-                                sh "docker push ${docker_repo}/${ImageName}:latest"
+                                sh "docker build -t ${imageName} ."
+                                sh "docker tag ${imageName} ${docker_repo}/${imageName}:latest"
+                                sh "docker push ${docker_repo}/${imageName}:latest"
                            }
                         }
                     }
@@ -78,13 +78,13 @@ pipeline{
 
         stage("TRIVY"){
                     steps{
-                        sh "trivy image ${docker_repo}/${ImageName}:latest > trivy.txt"
+                        sh "trivy image ${docker_repo}/${imageName}:latest > trivy.txt"
                     }
         }
 
         stage ('Deploy to container'){
                     steps{
-                        sh 'docker run -d --name pet1 -p 8090:8080 ${docker_repo}/${ImageName}:latest'
+                        sh 'docker run -d --name pet1 -p 8090:8080 ${docker_repo}/${imageName}:latest'
                     }
         }
 
